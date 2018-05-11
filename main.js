@@ -1,6 +1,10 @@
 
 
 var res = {
+  img : {
+    wall : "Resources/wall.png"
+  },
+
   img_bg : "Resources/bg.png",
   img_coin : "Resources/pluskun.png",
   img_enemy : "Resources/rectman.png",

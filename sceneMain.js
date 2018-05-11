@@ -11,7 +11,7 @@ function MainScene() {
       bg.setPosition(size.width/2, size.height/2);
       var sc = this;
       sc.addChild(bg);
-      sc._objects.push(new Wall({x:2, y:2}, cc.Sprite.create(res.img_snake)));
+      sc._objects.push(new Wall({x:2, y:2}, cc.Sprite.create(res.img.wall)));
       sc._objects.forEach(function(obj) {
         sc.addChild(obj.image, 1);
       });
