@@ -18,7 +18,7 @@ function MainScene() {
       console.log(cc.Sprite.create(res.img.snake));
       var body = new Body(
         {x:2, y:1},
-        cc.Sprite.create(res.img.snake, cc.rect(32, 0, 32, 32))
+        cc.Sprite.create(res.img.snake, cc.rect(32 * 5, 0, 32, 32))
       );
       var head = new Head(
         {x:2, y:2},
