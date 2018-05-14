@@ -15,17 +15,26 @@ function MainScene() {
       var sc = this;
       sc.addChild(bg);
 
-      console.log(cc.Sprite.create(res.img.snake));
+      var body3 = new Body(
+        {x:0, y:0},
+        createSnake("tail")
+      );
+      var body2 = new Body(
+        {x:0, y:1},
+        createSnake("body"),
+        body3
+      );
       var body = new Body(
-        {x:2, y:1},
-        cc.Sprite.create(res.img.snake, cc.rect(32 * 5, 0, 32, 32))
+        {x:1, y:1},
+        createSnake("body"),
+        body2
       );
       var head = new Head(
-        {x:2, y:2},
-        cc.Sprite.create(res.img.snake, cc.rect(0, 0, 32, 32)),
+        {x:2, y:1},
+        createSnake("head"),
         body
       );
-      sc._objects.push(head, body);
+      sc._objects.push(head, body, body2, body3);
       for(let x = 0; x < 20; x++) {
         for(let y = 0; y < 12; y++) {
           if(x === 10) continue;
@@ -40,7 +49,7 @@ function MainScene() {
       cc.eventManager.addListener(cc.EventListener.create({
         event: cc.EventListener.TOUCH_ONE_BY_ONE,
         onTouchBegan: function (touch, event) {
-            cc.log("onTouchBegan");
+            //cc.log("onTouchBegan");
             sc._objects.forEach(function(obj) {
               if(obj instanceof Head) {
                 obj.releaseMoveDelta();
@@ -50,7 +59,7 @@ function MainScene() {
         },
 
         onTouchMoved: function (touch, event) {
-            cc.log("onTouchMoved");
+            //cc.log("onTouchMoved");
             sc._objects.forEach(function(obj) {
               if(obj instanceof Head) {
                 //console.log(obj.touch.stack);
@@ -61,11 +70,11 @@ function MainScene() {
             return true;
         },
         onTouchEnded: function (touch, event) {
-            cc.log("onTouchEnded");
+            //cc.log("onTouchEnded");
             return true;
         },
         onTouchCancelled: function (touch, event) {
-            cc.log("onTouchCancelled");
+            //cc.log("onTouchCancelled");
         }
       }), this);
 
@@ -75,125 +84,26 @@ function MainScene() {
     update : function(dt) {
       var sc = this;
       sc._objects.forEach(function(obj) {
-        obj.update();
+        obj.update(sc);
       });
 
     }
   });
 }
 
+function createSnake(key) {
+  let index = 0;
+  if(key === "head") index = 0;
+  if(key === "body") index = 1;
+  if(key === "corner") index = 2;
+  if(key === "tail") index = 3;
+  //console.log("A: ", key, index);
+
+  return cc.Sprite.create(res.img.snake, cc.rect(32 * index, 0, 32, 32));
+}
+
 function addWall(scene, r) {
   scene._objects.push(new Wall(r, cc.Sprite.create(res.img.wall)));
-}
-
-class Entity {
-  constructor(_r, _image) {
-    this.r = _r;
-    this.image = _image;
-  }
-
-  update(scale) {
-    if(scale === undefined) scale = 32;
-    //console.log(this.image, this.r);
-    this.image.setPosition(scale * this.r.x, scale * this.r.y);
-  }
-
-  shift(dr) {
-    this.r.x += dr.x;
-    this.r.y += dr.y;
-  }
-
-  shiftTo(r) {
-    this.r.x = r.x;
-    this.r.y = r.y;
-  }
-
-  image() {
-    update(32);
-    return this.image;
-  }
-
-  zIndex() {
-    return 0;
-  }
-}
-
-class Wall extends Entity {
-
-}
-
-class Snake extends Entity {
-  notifyMove(scale, prer) {
-    console.log("A", this.nextSnake);
-    if(this.nextSnake !== undefined) {
-      console.log("B");
-      this.nextSnake.move(scale, prer);
-    }
-  }
-}
-
-class Head extends Snake {
-  constructor(_r, _image, _nextSnake) {
-    super();
-    this.r = _r;
-    this.image = _image;
-    this.nextSnake = _nextSnake;
-    this.touch = {r : null, stack : {x:0, y:0}};
-  }
-  releaseMoveDelta() {
-    this.touch.r = null;
-    this.touch.stack = {x:0, y:0};
-  }
-  stackMoveDelta(touch_r) {
-    if(this.touch.r != undefined) {
-      this.touch.stack.x += touch_r.x - this.touch.r.x;
-      this.touch.stack.y += touch_r.y - this.touch.r.y;
-    }
-    this.touch.r = {x: touch_r.x, y: touch_r.y};
-  }
-  move(scale) {
-    if(scale === undefined) scale = 32;
-    let dr = {x: 0, y: 0};
-    let pre = {r:{x:this.r.x, y:this.r.y}};
-
-    if(this.touch.stack.x >= scale) dr.x++;
-    else if(this.touch.stack.x <= -scale) dr.x--;
-    else if(this.touch.stack.y >= scale) dr.y++;
-    else if(this.touch.stack.y <= -scale) dr.y--;
-
-    //console.log(dr);
-    super.shift(dr);
-    if(dr.x || dr.y) {
-      console.log("FFJFJ");
-      super.notifyMove(scale, pre.r);
-      this.releaseMoveDelta();
-    }
-
-  }
-
-  zIndex() {
-    return 2;
-  }
-}
-
-class Body extends Snake {
-  constructor(_r, _image, _nextSnake) {
-    super();
-    this.r = _r;
-    this.image = _image;
-    this.nextSnake = _nextSnake;
-  }
-
-  move(scale, r) {
-    let pre = {r:{x:this.r.x, y:this.r.y}};
-    console.log("HJORIJFOIJRFOIJROIRJOJROJI");
-    super.shiftTo(r);
-    super.notifyMove(scale, pre.r);
-  }
-
-  zIndex() {
-    return 1;
-  }
 }
 
 function addPoint(r1, r2) {
