@@ -18,23 +18,33 @@ function MainScene() {
       sc.addChild(bg);
 
       for (var i = 0; i < 2; i++) {
-        createSnake(sc, {x:2, y:2});
+        createSnake(sc, {x:6, y:6});
       }
       for(let x = 0; x < 20; x++) {
         for(let y = 0; y < 12; y++) {
-          if(x > 0 && x < 10) continue;
+          if(x > 4 && x <= 10 && y > 4 && y <= 10) continue;
           createWall(sc, {x:x, y:y});
         }
       }
-      createItem(sc, {x:5, y:3});
-      createItem(sc, {x:4, y:3});
-      createItem(sc, {x:7, y:8});
-      createItem(sc, {x:8, y:6});
-      createWall(sc, {x:4, y:5});
-      createWall(sc, {x:5, y:5});
-      createWall(sc, {x:5, y:6});
+      createItem(sc, {x:5, y:6});
+      createItem(sc, {x:5, y:9});
+      createItem(sc, {x:6, y:5});
+      createItem(sc, {x:7, y:10});
+      createItem(sc, {x:8, y:5});
+      createItem(sc, {x:9, y:10});
+      createItem(sc, {x:10, y:7});
+      createItem(sc, {x:10, y:9});
+      createWall(sc, {x:7, y:8});
       createWall(sc, {x:5, y:7});
-      createWall(sc, {x:4, y:7});
+      createWall(sc, {x:5, y:8});
+      createWall(sc, {x:7, y:5});
+      createWall(sc, {x:7, y:7});
+      createWall(sc, {x:7, y:8});
+      createWall(sc, {x:8, y:8});
+      createWall(sc, {x:8, y:9});
+      createWall(sc, {x:8, y:10});
+      createWall(sc, {x:9, y:6});
+      createWall(sc, {x:10, y:8});
       this._objects.forEach((obj) => {
         if(obj instanceof Wall) obj.reload(sc);
       });
