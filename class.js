@@ -9,7 +9,9 @@ class Entity {
     if(!option) option = {};
     if(option.scale === undefined) option.scale = 32;
     //console.log(this.image, this.r);
+    if(this.image === undefined) return false;
     this.image.setPosition(option.scale * this.r.x, option.scale * this.r.y);
+    return true;
   }
 
   shift(dr) {
@@ -29,6 +31,29 @@ class Entity {
 
 class Wall extends Entity {
 
+}
+
+class Item extends Entity {
+  constructor(_r, _image) {
+    super(_r, _image);
+    this.isRemoved = false;
+  }
+
+  update(scene, option) {
+    if(this.removed) return false;
+    super.update(scene, option);
+    scene._objects.forEach((obj) => {
+      if(obj instanceof Head) {
+        if(obj.r.x === this.r.x && obj.r.y === this.r.y) {
+          createSnake(scene);
+          cc.audioEngine.playEffect(res.se.item, false);
+          this.isRemoved = true;
+          return;
+        }
+      }
+    });
+    return this.isRemoved === false;
+  }
 }
 
 class Snake extends Entity {
@@ -59,7 +84,18 @@ class Head extends Snake {
     }
     this.touch.r = {x: touch_r.x, y: touch_r.y};
   }
-  move(scale) {
+  canMove(objects, target) {
+    let res = true;
+    objects.forEach(function(obj) {
+      if(obj instanceof Wall || obj instanceof Body) {
+        if(target.x === obj.r.x && target.y === obj.r.y) {
+          res = false;
+        }
+      }
+    });
+    return res;
+  }
+  move(scale, scene) {
     if(scale === undefined) scale = 32;
     let dr = {x: 0, y: 0};
     let pre = {r:{x:this.r.x, y:this.r.y}};
@@ -70,16 +106,21 @@ class Head extends Snake {
     else if(this.touch.stack.y <= -scale) dr.y--;
 
     //console.log(dr);
-    super.shift(dr);
     if(dr.x || dr.y) {
-      super.notifyMove(scale, pre.r, dr);
+      console.log(dr, this.touch.stack, this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y}));
+      if(this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y})) {
+
+        super.shift(dr);
+        super.notifyMove(scale, pre.r, dr);
+
+        if(dr.x === -1) this.rot = 0;
+        if(dr.y === 1) this.rot = 90;
+        if(dr.x === 1) this.rot = 180;
+        if(dr.y === -1) this.rot = 270;
+      }
+
       this.releaseMoveDelta();
     }
-
-    if(dr.x === -1) this.rot = 0;
-    if(dr.y === 1) this.rot = 90;
-    if(dr.x === 1) this.rot = 180;
-    if(dr.y === -1) this.rot = 270;
   }
 
   update(scene, option) {
@@ -88,6 +129,7 @@ class Head extends Snake {
     this.image.removeFromParent();
     this.image.attr({rotation : this.rot});
     scene.addChild(this.image, this.zIndex());
+    return true;
   }
 
   zIndex() {
@@ -111,7 +153,7 @@ class Body extends Snake {
     super.shiftTo(r);
     super.notifyMove(scale, pre.r, {x:r.x - pre.r.x, y:r.y - pre.r.y});
 
-    console.log("ASD", pre.r, r, dr);
+    //console.log("ASD", pre.r, r, dr);
 
     if(dr.x === -1) this.rot = 0;
     if(dr.y === 1) this.rot = 90;
@@ -122,6 +164,9 @@ class Body extends Snake {
     else {
       if(dr.x === r.x - pre.r.x && dr.y === r.y - pre.r.y) {
         this.key = "body";
+        if((pre.r.x + pre.r.y) % 2 === 0) {
+          this.isFlip = true;
+        }
       } else {
         this.key = "corner";
         if(dr.x * (r.y - pre.r.y) - dr.y * (r.x - pre.r.x) > 0) {
@@ -134,14 +179,16 @@ class Body extends Snake {
   update(scene, option) {
     if(!option) option = {};
     this.image.removeFromParent();
-    this.image = createSnake(this.key);
+    //console.log("frjifjrijfirjfijrifjrijfirjifjriji", this.image);
+    this.image = createImage(this.key);
     this.image.attr({
       rotation : this.rot,
       scaleY : (this.isFlip) ? -1 : 1
      });
     scene.addChild(this.image, this.zIndex());
     super.update(option.scale);
-    console.log(this.image);
+    //console.log(this.image);
+    return true;
   }
 
   zIndex() {

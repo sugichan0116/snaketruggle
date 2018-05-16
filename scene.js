@@ -2,11 +2,12 @@
 function MainScene() {
   return cc.Scene.extend({
     //プロパティ
-    _scale : 32,
-    _objects: [],
+    _scale   : 32,
+    _objects : [],
     //init
     onEnter:function () {
       this._super();
+      
 
       var size = cc.director.getWinSize();
       // 背景の作成
@@ -15,35 +16,23 @@ function MainScene() {
       var sc = this;
       sc.addChild(bg);
 
-      var body3 = new Body(
-        {x:0, y:0},
-        createSnake("tail")
-      );
-      var body2 = new Body(
-        {x:0, y:1},
-        createSnake("body"),
-        body3
-      );
-      var body = new Body(
-        {x:1, y:1},
-        createSnake("body"),
-        body2
-      );
-      var head = new Head(
-        {x:2, y:1},
-        createSnake("head"),
-        body
-      );
-      sc._objects.push(head, body, body2, body3);
+      for (var i = 0; i < 2; i++) {
+        createSnake(sc, {x:2, y:2});
+      }
       for(let x = 0; x < 20; x++) {
         for(let y = 0; y < 12; y++) {
-          if(x === 10) continue;
-          addWall(sc, {x:x, y:y});
+          if(x > 0 && x < 10) continue;
+          //createWall(sc, {x:x, y:y});
         }
       }
-      sc._objects.forEach(function(obj) {
-        sc.addChild(obj.image, obj.zIndex());
-      });
+      createItem(sc, {x:5, y:5});
+      createItem(sc, {x:10, y:5});
+      createItem(sc, {x:11, y:5});
+      createItem(sc, {x:6, y:6});
+      createWall(sc, {x:4, y:5});
+      // sc._objects.forEach(function(obj) {
+      //   sc.addChild(obj.image, obj.zIndex());
+      // });
 
       //タッチ処理
       cc.eventManager.addListener(cc.EventListener.create({
@@ -64,7 +53,7 @@ function MainScene() {
               if(obj instanceof Head) {
                 //console.log(obj.touch.stack);
                 obj.stackMoveDelta(touch.getLocation());
-                obj.move();
+                obj.move(32, sc);
               }
             });
             return true;
@@ -83,36 +72,12 @@ function MainScene() {
     },
     update : function(dt) {
       var sc = this;
-      sc._objects.forEach(function(obj) {
-        obj.update(sc);
+      sc._objects.forEach(function(obj, index) {
+        if(obj.update(sc) === false) {
+          obj.image.removeFromParent();
+          sc._objects.splice(index, 1);
+        }
       });
-
     }
   });
-}
-
-function createSnake(key) {
-  let index = 0;
-  if(key === "head") index = 0;
-  if(key === "body") index = 1;
-  if(key === "corner") index = 2;
-  if(key === "tail") index = 3;
-  //console.log("A: ", key, index);
-
-  return cc.Sprite.create(res.img.snake, cc.rect(32 * index, 0, 32, 32));
-}
-
-function addWall(scene, r) {
-  scene._objects.push(new Wall(r, cc.Sprite.create(res.img.wall)));
-}
-
-function addPoint(r1, r2) {
-  r1.x += r2.x;
-  r1.y += r2.y;
-  return
-}
-
-function subPoint(r1, r2) {
-  r1.x -= r2.x;
-  r1.y -= r2.y;
 }
