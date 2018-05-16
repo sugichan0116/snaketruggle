@@ -21,8 +21,39 @@ function createSnake(scene, r) {
   addChild(scene, snake);
 }
 
+function createImageForWall(around) {
+  let images = [];
+  //0,0 => -1, 1
+  //1,0 =>  1, 1
+  //0,1 => -1,-1
+  //1,1 =>  1,-1
+  for(let y = 0; y < 2; y++) {
+    for(let x = 0; x < 2; x++) {
+      let level = 0,
+          dx = (x === 0) ? -1 : 1,
+          dy = (y === 0) ? 1 : -1;
+      if(around[dx][0] && around[0][dy]) {
+        if(around[dx][dy]) {
+          level = 4;
+        } else {
+          level = 3;
+        }
+      } else {
+        if(around[dx][0]) {
+          level = 2;
+        } else if(around[0][dy]) {
+          level = 1;
+        }
+      }
 
-function createImage(key) {
+      images.push(cc.Sprite.create(res.img.wall, cc.rect(16 * x, 16 * y + 32 * level, 16, 16)));
+    }
+  }
+
+  return images;
+}
+
+function createImage(key, frame) {
   let index = 0;
   if(key === "head") index = 0;
   if(key === "body") index = 1;
@@ -30,7 +61,7 @@ function createImage(key) {
   if(key === "tail") index = 3;
   //console.log("A: ", key, index);
 
-  return cc.Sprite.create(res.img.snake, cc.rect(32 * index, 0, 32, 32));
+  return cc.Sprite.create(res.img.snake, cc.rect(32 * index, 32 * (frame % 4), 32, 32));
 }
 
 function addChild(scene, obj) {
@@ -44,7 +75,7 @@ function createItem(scene, r) {
 }
 
 function createWall(scene, r) {
-  let wall = new Wall(r, cc.Sprite.create(res.img.wall));
+  let wall = new Wall(r, cc.Sprite.create(res.img.wall, cc.rect(0, 0, 32, 32)));
   scene._objects.push(wall);
   addChild(scene, wall);
 }

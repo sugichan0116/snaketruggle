@@ -11,6 +11,14 @@ class Entity {
     //console.log(this.image, this.r);
     if(this.image === undefined) return false;
     this.image.setPosition(option.scale * this.r.x, option.scale * this.r.y);
+    if(this.images) {
+      this.images.forEach((img, index) => {
+        img.setPosition(
+          option.scale * (this.r.x + index % 2 * 0.5 - 0.25),
+          option.scale * (this.r.y + ((index <= 1) ? 1 : 0) * 0.5 - 0.25)
+        );
+      });
+    }
     return true;
   }
 
@@ -30,7 +38,28 @@ class Entity {
 }
 
 class Wall extends Entity {
+  update(scene, option) {
+    super.update(scene, option);
 
+  }
+
+  reload(scene) {
+    this.image.removeFromParent();
+    let around = {"-1":{}, "0":{}, "1":{}};
+    scene._objects.forEach((obj) => {
+      if(obj instanceof Wall) {
+        let r = {x: obj.r.x - this.r.x, y: obj.r.y - this.r.y};
+        if(Math.abs(r.x) <= 1 && Math.abs(r.y) <= 1) {
+          around[r.x][r.y] = true;
+        }
+      }
+    });
+    this.images = createImageForWall(around);
+    this.images.forEach((img) => {
+      scene.addChild(img, this.zIndex());
+    });
+    console.log(around);
+  }
 }
 
 class Item extends Entity {
@@ -53,6 +82,10 @@ class Item extends Entity {
       }
     });
     return this.isRemoved === false;
+  }
+
+  zIndex() {
+    return 3;
   }
 }
 
@@ -107,7 +140,7 @@ class Head extends Snake {
 
     //console.log(dr);
     if(dr.x || dr.y) {
-      console.log(dr, this.touch.stack, this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y}));
+      //console.log(dr, this.touch.stack, this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y}));
       if(this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y})) {
 
         super.shift(dr);
@@ -125,10 +158,11 @@ class Head extends Snake {
 
   update(scene, option) {
     if(!option) option = {};
-    super.update(option.scale);
     this.image.removeFromParent();
+    this.image = createImage("head", scene._frames);
     this.image.attr({rotation : this.rot});
     scene.addChild(this.image, this.zIndex());
+    super.update(option.scale);
     return true;
   }
 
@@ -180,7 +214,8 @@ class Body extends Snake {
     if(!option) option = {};
     this.image.removeFromParent();
     //console.log("frjifjrijfirjfijrifjrijfirjifjriji", this.image);
-    this.image = createImage(this.key);
+    //console.log(scene._frames);
+    this.image = createImage(this.key, scene._frames);
     this.image.attr({
       rotation : this.rot,
       scaleY : (this.isFlip) ? -1 : 1

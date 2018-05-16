@@ -4,10 +4,11 @@ function MainScene() {
     //プロパティ
     _scale   : 32,
     _objects : [],
+    _frames : 0,
     //init
     onEnter:function () {
       this._super();
-      
+
 
       var size = cc.director.getWinSize();
       // 背景の作成
@@ -22,17 +23,21 @@ function MainScene() {
       for(let x = 0; x < 20; x++) {
         for(let y = 0; y < 12; y++) {
           if(x > 0 && x < 10) continue;
-          //createWall(sc, {x:x, y:y});
+          createWall(sc, {x:x, y:y});
         }
       }
-      createItem(sc, {x:5, y:5});
-      createItem(sc, {x:10, y:5});
-      createItem(sc, {x:11, y:5});
-      createItem(sc, {x:6, y:6});
+      createItem(sc, {x:5, y:3});
+      createItem(sc, {x:4, y:3});
+      createItem(sc, {x:7, y:8});
+      createItem(sc, {x:8, y:6});
       createWall(sc, {x:4, y:5});
-      // sc._objects.forEach(function(obj) {
-      //   sc.addChild(obj.image, obj.zIndex());
-      // });
+      createWall(sc, {x:5, y:5});
+      createWall(sc, {x:5, y:6});
+      createWall(sc, {x:5, y:7});
+      createWall(sc, {x:4, y:7});
+      this._objects.forEach((obj) => {
+        if(obj instanceof Wall) obj.reload(sc);
+      });
 
       //タッチ処理
       cc.eventManager.addListener(cc.EventListener.create({
@@ -69,6 +74,9 @@ function MainScene() {
 
       //set update
       sc.scheduleUpdate();
+      sc.schedule(() => {
+        sc._frames++;
+      }, 0.1);
     },
     update : function(dt) {
       var sc = this;
