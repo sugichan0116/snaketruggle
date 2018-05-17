@@ -8,6 +8,7 @@ function createSnake(scene, r) {
   console.log(scene._objects);
   scene._objects.forEach((obj) => {
     if(obj instanceof Snake === false) return;
+    console.log("dddd : ", obj);
     if(obj.nextSnake === undefined) pre = obj;
   });
   if(pre === undefined) return createHead(scene, r);

@@ -58,7 +58,7 @@ class Wall extends Entity {
     this.images.forEach((img) => {
       scene.addChild(img, this.zIndex());
     });
-    console.log(around);
+    //console.log(around);
   }
 }
 
