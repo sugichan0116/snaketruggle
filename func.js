@@ -1,31 +1,36 @@
-function createSnake(scene, r) {
+function createSnake(scene, r, testdesu) {
   function createHead(scene, r) {
-      console.log("HEAD CREATE");
       let head = new Head(r, createImageForSnake("head"));
       scene._objects.push(head);
       addChild(scene, head);
+          console.log("HEAD CREATE", head);
   }
   let pre;
+  let count = 0;
   scene._objects.forEach((obj) => {
     if(obj instanceof Snake === false) return;
+    count++;
     console.log("dddd : ",obj);
     if(obj.nextSnake === undefined) pre = obj;
   });
-  console.log(pre);
+  console.log("aa",count, pre);
   if(pre === undefined) return createHead(scene, r);
 
   var snake = new Body(
-    {x:pre.x, y: pre.y - 1},
+    {},
     createImageForSnake("body")
   );
+  if(true) snake.preSnake = pre;
+  snake.frame = scene._frames;
   pre.nextSnake = snake;
   scene._objects.push(snake);
   addChild(scene, snake);
 
-      console.log("body CREATE");
+      console.log("@@@@@@@@@@ body CREATE", snake);
 }
 
 function removeSnake(scene) {
+  console.log("==========================================");
   scene._objects.forEach((obj) => {
     if(obj instanceof Snake) {
       if(obj.nextSnake === undefined) {

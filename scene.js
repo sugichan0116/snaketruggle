@@ -20,13 +20,13 @@ function MainScene() {
       let map = {
           size: {width:6, height:6},
           r: {x:7, y:3},
-          lengthOfSnake: 2,
+          lengthOfSnake: 4,
           data: {
             "0" : {"1":"i", "2":"w", "3":"w", "4":"i"},
             "1" : {"0":"i", "1":"s"},
             "2" : {"0":"w", "2":"w", "3":"w", "5":"i"},
             "3" : {"0":"i", "3":"w", "4":"w", "5":"w"},
-            "4" : {"1":"w", "2":"e(L)", "5":"i"},
+            "4" : {"1":"w", "2":"e(D)", "5":"i"},
             "5" : {"2":"i", "3":"w", "4":"i"}
           }
         };
@@ -115,6 +115,9 @@ function MainScene() {
         }
         return isLive;
       });
+      console.log(sc._objects.filter((obj) => {
+        return obj instanceof Wall === false
+      }));
     }
   });
 }

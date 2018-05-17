@@ -97,7 +97,7 @@ class Item extends Entity {
         //console.log(obj.r, this.r, obj, obj.image);
         if(obj.r.x === this.r.x && obj.r.y === this.r.y) {
           // removeSnake(scene);
-          createSnake(scene);
+          createSnake(scene, {}, true);
           cc.audioEngine.playEffect(res.se.item, false);
           this.isRemoved = true;
           return;
@@ -290,7 +290,9 @@ class Body extends Snake {
      });
     scene.addChild(this.image, this.zIndex());
     //console.log(this.image);
-    return super.update(option.scale);
+    let res = super.update(option.scale);
+    if(res == false) console.log("JFIRJIFJRIJFIJRIFJIRJFIJRFIJIRFJRIJ");
+    return res;
   }
 
   zIndex() {
