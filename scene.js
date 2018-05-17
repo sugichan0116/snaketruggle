@@ -96,6 +96,9 @@ function MainScene() {
           sc._objects.splice(index, 1);
         }
       });
+      console.log(sc._objects.filter((obj) => {
+        return obj instanceof Wall === false
+      }));
     }
   });
 }
