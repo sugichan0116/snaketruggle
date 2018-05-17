@@ -8,43 +8,60 @@ function MainScene() {
     //init
     onEnter:function () {
       this._super();
-
-
-      var size = cc.director.getWinSize();
-      // 背景の作成
-      var bg = cc.Sprite.create(res.img_bg);
-      bg.setPosition(size.width/2, size.height/2);
       var sc = this;
+
+      // 背景の作成
+      var size = cc.director.getWinSize();
+      var bg = cc.Sprite.create(res.img.background);
+      bg.setPosition(size.width/2, size.height/2);
       sc.addChild(bg);
 
-      for (var i = 0; i < 2; i++) {
-        createSnake(sc, {x:6, y:6});
-      }
-      for(let x = 0; x < 20; x++) {
-        for(let y = 0; y < 12; y++) {
-          if(x > 4 && x <= 10 && y > 4 && y <= 10) continue;
+      //mapの生成
+      let map = {
+          size: {width:6, height:6},
+          r: {x:7, y:3},
+          lengthOfSnake: 2,
+          data: {
+            "0" : {"1":"i", "2":"w", "3":"w", "4":"i"},
+            "1" : {"0":"i", "1":"s"},
+            "2" : {"0":"w", "2":"w", "3":"w", "5":"i"},
+            "3" : {"0":"i", "3":"w", "4":"w", "5":"w"},
+            "4" : {"1":"w", "2":"e(L)", "5":"i"},
+            "5" : {"2":"i", "3":"w", "4":"i"}
+          }
+        };
+      for(let x = 0; x <= 20; x++) {
+        for(let y = 0; y <= 12; y++) {
+          if(map.size.width > x - map.r.x &&
+             x - map.r.x >= 0 &&
+             map.size.height > y - map.r.y &&
+             y - map.r.y >= 0) continue;
           createWall(sc, {x:x, y:y});
         }
       }
-      createItem(sc, {x:5, y:6});
-      createItem(sc, {x:5, y:9});
-      createItem(sc, {x:6, y:5});
-      createItem(sc, {x:7, y:10});
-      createItem(sc, {x:8, y:5});
-      createItem(sc, {x:9, y:10});
-      createItem(sc, {x:10, y:7});
-      createItem(sc, {x:10, y:9});
-      createWall(sc, {x:7, y:8});
-      createWall(sc, {x:5, y:7});
-      createWall(sc, {x:5, y:8});
-      createWall(sc, {x:7, y:5});
-      createWall(sc, {x:7, y:7});
-      createWall(sc, {x:7, y:8});
-      createWall(sc, {x:8, y:8});
-      createWall(sc, {x:8, y:9});
-      createWall(sc, {x:8, y:10});
-      createWall(sc, {x:9, y:6});
-      createWall(sc, {x:10, y:8});
+      Object.keys(map.data).forEach((x) => {
+        Object.keys(map.data[x]).forEach((y) => {
+          console.log(x, y);
+          let entityChar = map.data[x][y];
+          let deploy = {r: {
+            x:Number(x) + map.r.x,
+            y:Number(y) + map.r.y
+          }};
+          if(entityChar === "w") {
+            createWall(sc, deploy.r);
+          } else if(entityChar.indexOf("e") === 0) {
+            createEnemy(sc, deploy.r, entityChar);
+          } else if(entityChar === "i") {
+            createItem(sc, deploy.r);
+          } else if(entityChar === "s") {
+            for (var i = 0, n = map.lengthOfSnake; i < n; i++) {
+              createSnake(sc, deploy.r);
+            }
+          }
+        });
+      });
+
+      //壁のスムージング
       this._objects.forEach((obj) => {
         if(obj instanceof Wall) obj.reload(sc);
       });
@@ -68,7 +85,7 @@ function MainScene() {
               if(obj instanceof Head) {
                 //console.log(obj.touch.stack);
                 obj.stackMoveDelta(touch.getLocation());
-                obj.move(32, sc);
+                obj.move(sc);
               }
             });
             return true;
@@ -90,11 +107,13 @@ function MainScene() {
     },
     update : function(dt) {
       var sc = this;
-      sc._objects.forEach(function(obj, index) {
-        if(obj.update(sc) === false) {
+      sc._objects = sc._objects.filter((obj) => {
+        let isLive = obj.update(sc);
+        if(isLive == false) {
+          //console.log(obj);
           obj.image.removeFromParent();
-          sc._objects.splice(index, 1);
         }
+        return isLive;
       });
     }
   });
