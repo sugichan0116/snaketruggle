@@ -76,6 +76,7 @@ class Switch extends Gimmick {
   constructor(_r, _image, _port) {
     super(_r, _image);
     this.port = _port;
+    this.preState = 0;
   }
 
   update(scene, option) {
@@ -83,9 +84,14 @@ class Switch extends Gimmick {
     if(super.canMove(scene._objects, this.r, super.isRelate) === false) {
       //snakeが乗ってる
       console.log("!");
+      if(this.preState === 0) {
+        cc.audioEngine.playEffect(res.se.button, false);
+      }
       isPowered = 1;
       scene._signals[this.port] = true;
     }
+    this.preState = isPowered;
+    
     if(!option) option = {};
     this.image.removeFromParent();
     this.image = createImageSwitch(isPowered, scene._frames);
@@ -304,6 +310,7 @@ class Head extends Snake {
         this.isRelate
       )) {
 
+        cc.audioEngine.playEffect(res.se.move, false);
         super.shift(dr);
         super.notifyMove(scale, pre.r, dr);
 

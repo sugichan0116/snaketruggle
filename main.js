@@ -11,7 +11,9 @@ var res = {
     background : resPath + "back.png"
   },
   se : {
-    item : resPath + "getPoint.mp3"
+    item : resPath + "getPoint.mp3",
+    move : resPath + "move.mp3",
+    button : resPath + "button.mp3"
   }
 }
 
@@ -26,7 +28,9 @@ window.onload = function() {
       res.img.background,
       res.img.button,
       res.img.gate,
-      res.se.item
+      res.se.item,
+      res.se.button,
+      res.se.move
     ];
     cc.LoaderScene.preload(preload_res, function() {
       var MyScene = MainScene();
