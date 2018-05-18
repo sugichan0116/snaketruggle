@@ -20,7 +20,7 @@ function MainScene() {
       let map = {
           size: {width:6, height:6},
           r: {x:7, y:3},
-          lengthOfSnake: 4,
+          lengthOfSnake: 2,
           data: {
             "0" : {"1":"i", "2":"w", "3":"w", "4":"i"},
             "1" : {"0":"i", "1":"s"},
@@ -107,17 +107,13 @@ function MainScene() {
     },
     update : function(dt) {
       var sc = this;
-      sc._objects = sc._objects.filter((obj) => {
-        let isLive = obj.update(sc);
-        if(isLive == false) {
-          //console.log(obj);
-          obj.image.removeFromParent();
-        }
-        return isLive;
+      sc._objects.forEach((obj) => {
+        obj.update(sc);
       });
-      console.log(sc._objects.filter((obj) => {
-        return obj instanceof Wall === false
-      }));
+      sc._objects = sc._objects.filter((obj) => {
+        obj.releaseImage();
+        return obj.isRemoved !== true;
+      });
     }
   });
 }

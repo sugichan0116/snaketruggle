@@ -5,11 +5,23 @@ class Entity {
     this.image = _image;
   }
 
+  releaseImage() {
+    if(this.isRemoved === true) {
+      if(this.image) this.image.removeFromParent();
+      if(this.images) this.images.forEach((img) => {
+        img.removeFromParent();
+      });
+    }
+  }
+
   update(scene, option) {
-    if(this.isRemoved === true) return false;
+    if(this.isRemoved === true) {
+      this.releaseImage();
+      return false;
+    }
     if(!option) option = {};
     if(option.scale === undefined) option.scale = 32;
-    //console.log(this.image, this.r);
+
     if(this.image === undefined) return false;
     this.image.setPosition(option.scale * this.r.x, option.scale * this.r.y);
     if(this.images) {
@@ -29,7 +41,6 @@ class Entity {
 
   canMove(objects, target, isRelate) {
     let res = true;
-    //console.log(this);
     objects.forEach(function(obj) {
       if(isRelate(obj)) {
         if(target.x === obj.r.x && target.y === obj.r.y) {
@@ -94,7 +105,6 @@ class Item extends Entity {
     super.update(scene, option);
     scene._objects.forEach((obj) => {
       if(obj instanceof Head) {
-        //console.log(obj.r, this.r, obj, obj.image);
         if(obj.r.x === this.r.x && obj.r.y === this.r.y) {
           // removeSnake(scene);
           createSnake(scene, {}, true);
@@ -218,7 +228,6 @@ class Head extends Snake {
         super.notifyMove(scale, pre.r, dr);
 
         this.rot = getAngle(dr);
-        console.log("-----------------------HEAD",this);
         this.restartTime(scene._objects);
       }
 
@@ -290,9 +299,7 @@ class Body extends Snake {
      });
     scene.addChild(this.image, this.zIndex());
     //console.log(this.image);
-    let res = super.update(option.scale);
-    if(res == false) console.log("JFIRJIFJRIJFIJRIFJIRJFIJRFIJIRFJRIJ");
-    return res;
+    return super.update(option.scale);
   }
 
   zIndex() {
