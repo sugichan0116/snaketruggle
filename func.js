@@ -90,7 +90,15 @@ function createImageForSnake(key, frame) {
 }
 
 function createImageForEnemy(frame) {
-  return cc.Sprite.create(res.img.crawler, cc.rect(0, 32 * (frame % 1), 32, 32));
+  return cc.Sprite.create(res.img.crawler, cc.rect(0, 32 * (frame % 4), 32, 32));
+}
+
+function createImageSwitch(index, frame) {
+  return cc.Sprite.create(res.img.button, cc.rect(0, 32 * index, 32, 32));
+}
+
+function createImageGate(index, frame) {
+  return cc.Sprite.create(res.img.gate, cc.rect(0, 32 * index, 32, 32));
 }
 
 function getAngle(dr) {
@@ -105,6 +113,38 @@ function getAngle(dr) {
 
 function addChild(scene, obj) {
   scene.addChild(obj.image, obj.zIndex());
+}
+
+function getProperty(text) {
+  return text.substring(
+    text.indexOf('(') + 1,
+    text.indexOf(')')
+  );
+}
+
+function createGate(scene, r, entityChar, isSignal) {
+  if(isSignal === undefined) isSignal = false;
+  let option = getProperty(entityChar);
+  console.log(option, option.split(','));
+  let obj = new Gate(
+    r,
+    cc.Sprite.create(res.img.gate),
+    isSignal,
+    option.split('&')
+  );
+  scene._objects.push(obj);
+  addChild(scene, obj);
+}
+
+function createSwitch(scene, r, entityChar) {
+  let option = getProperty(entityChar);
+  let obj = new Switch(
+    r,
+    cc.Sprite.create(res.img.button),
+    option
+  );
+  scene._objects.push(obj);
+  addChild(scene, obj);
 }
 
 function createEnemy(scene, r, entityChar) {

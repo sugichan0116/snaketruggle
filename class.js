@@ -66,6 +66,80 @@ class Entity {
   }
 }
 
+class Gimmick extends Entity {
+  isRelate(obj) {
+    return (obj instanceof Snake) || (obj instanceof Enemy);
+  }
+}
+
+class Switch extends Gimmick {
+  constructor(_r, _image, _port) {
+    super(_r, _image);
+    this.port = _port;
+  }
+
+  update(scene, option) {
+    let isPowered = 0;
+    if(super.canMove(scene._objects, this.r, super.isRelate) === false) {
+      //snakeが乗ってる
+      console.log("!");
+      isPowered = 1;
+      scene._signals[this.port] = true;
+    }
+    if(!option) option = {};
+    this.image.removeFromParent();
+    this.image = createImageSwitch(isPowered, scene._frames);
+    scene.addChild(this.image, this.zIndex());
+    return super.update(scene, option);
+  }
+
+  zIndex() {
+    return 2;
+  }
+}
+
+class Gate extends Gimmick {
+  constructor(_r, _image, _isSignal, _receiver) {
+    super(_r, _image);
+    this.receivers = _receiver;
+    this.isWall = _isSignal;
+    this.isWallOnNoSignal = _isSignal;
+  }
+
+  catchSignal(scene) {
+    let state = true;
+    this.receivers.forEach((receiver) => {
+      let signal = scene._signals[Number(receiver)];
+      if(signal === undefined) signal = false;
+      console.log(">>>>>>>>>>>>>>>DDR", signal, receiver);
+      state = state && signal;
+    });
+    return state;
+  }
+
+  changeWall(scene) {
+    let state = this.catchSignal(scene);
+    this.isWall = state ^ this.isWallOnNoSignal;
+    console.log("RESUTL : ", state, this.isWall);
+    if(super.canMove(scene._objects, this.r, super.isRelate) === false) {
+      //snakeが乗ってる
+      this.isWall = false;
+    }
+  }
+
+  updateWithSignal(scene) {
+    this.changeWall(scene);
+  }
+
+  update(scene, option) {
+    if(!option) option = {};
+    this.image.removeFromParent();
+    this.image = createImageGate(((this.isWall) ? 1 : 0), scene._frames);
+    scene.addChild(this.image, this.zIndex());
+    return super.update(scene, option);
+  }
+}
+
 class Wall extends Entity {
 
   removeImage() {
@@ -128,7 +202,10 @@ class Enemy extends Entity {
     this.dir = _dir;
   }
   isRelate(obj) {
-    return (obj instanceof Wall) || (obj instanceof Snake);
+    return (obj instanceof Wall)
+      || (obj instanceof Snake)
+      || (obj instanceof Enemy)
+      || (obj instanceof Gate && obj.isWall);
   }
   switchDirection() {
     this.dir = {x:-this.dir.x, y:-this.dir.y};
@@ -197,7 +274,10 @@ class Head extends Snake {
     this.touch.r = {x: touch_r.x, y: touch_r.y};
   }
   isRelate(obj) {
-    return (obj instanceof Wall) || (obj instanceof Body) || (obj instanceof Enemy);
+    return (obj instanceof Wall)
+      || (obj instanceof Body)
+      || (obj instanceof Enemy)
+      || (obj instanceof Gate && obj.isWall);
   }
   restartTime(objects) {
     objects.forEach((obj) => {
@@ -245,7 +325,7 @@ class Head extends Snake {
   }
 
   zIndex() {
-    return 2;
+    return 3;
   }
 }
 
@@ -264,8 +344,6 @@ class Body extends Snake {
     let pre = {r:{x:this.r.x, y:this.r.y}};
     super.shiftTo(r);
     super.notifyMove(scale, pre.r, {x:r.x - pre.r.x, y:r.y - pre.r.y});
-
-    //console.log("ASD", pre.r, r, dr);
 
     if(dr.x === -1) this.rot = 0;
     if(dr.y === 1) this.rot = 90;
@@ -303,6 +381,6 @@ class Body extends Snake {
   }
 
   zIndex() {
-    return 1;
+    return 3;
   }
 }

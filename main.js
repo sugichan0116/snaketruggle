@@ -6,6 +6,8 @@ var res = {
     snake : resPath + "snake.png",
     memo : resPath + "memory.png",
     crawler : resPath + "crawler.png",
+    button : resPath + "switch.png",
+    gate : resPath + "gate.png",
     background : resPath + "back.png"
   },
   se : {
@@ -22,6 +24,8 @@ window.onload = function() {
       res.img.memo,
       res.img.crawler,
       res.img.background,
+      res.img.button,
+      res.img.gate,
       res.se.item
     ];
     cc.LoaderScene.preload(preload_res, function() {
