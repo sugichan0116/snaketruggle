@@ -1,11 +1,16 @@
+function logObj(scene) {
+  console.log(scene._frames, scene._objects.filter((obj) => {
+    return obj instanceof Wall === false
+  }));
+}
+
 function createSnake(scene, r) {
   function createHead(scene, r) {
-      let head = new Head(r, createImage("head"));
+      let head = new Head(r, createImageForSnake("head"));
       scene._objects.push(head);
       addChild(scene, head);
   }
   let pre;
-  console.log(scene._objects);
   scene._objects.forEach((obj) => {
     if(obj instanceof Snake === false) return;
     console.log("dddd : ", obj);
@@ -14,12 +19,31 @@ function createSnake(scene, r) {
   if(pre === undefined) return createHead(scene, r);
 
   var snake = new Body(
-    {x:pre.x, y: pre.y - 1},
-    createImage("body")
+    {},
+    createImageForSnake("body")
   );
+  if(true) snake.preSnake = pre;
+  snake.frame = scene._frames;
   pre.nextSnake = snake;
   scene._objects.push(snake);
   addChild(scene, snake);
+}
+
+function removeSnake(scene) {
+  scene._objects.forEach((obj) => {
+    if(obj instanceof Snake) {
+      if(obj.nextSnake === undefined) {
+        obj.isRemoved = true;
+        for (target of scene._objects) {
+          if(target instanceof Snake) {
+            if(target.nextSnake === obj) {
+              delete target.nextSnake;
+            }
+          }
+        }
+      }
+    }
+  });
 }
 
 function createImageForWall(around) {
@@ -54,7 +78,7 @@ function createImageForWall(around) {
   return images;
 }
 
-function createImage(key, frame) {
+function createImageForSnake(key, frame) {
   let index = 0;
   if(key === "head") index = 0;
   if(key === "body") index = 1;
@@ -65,8 +89,41 @@ function createImage(key, frame) {
   return cc.Sprite.create(res.img.snake, cc.rect(32 * index, 32 * (frame % 4), 32, 32));
 }
 
+function createImageForEnemy(frame) {
+  return cc.Sprite.create(res.img.crawler, cc.rect(0, 32 * (frame % 1), 32, 32));
+}
+
+function getAngle(dr) {
+  let rot = 0;
+  if(dr.x === -1) rot = 0;
+  if(dr.y === 1) rot = 90;
+  if(dr.x === 1) rot = 180;
+  if(dr.y === -1) rot = 270;
+
+  return rot;
+}
+
 function addChild(scene, obj) {
   scene.addChild(obj.image, obj.zIndex());
+}
+
+function createEnemy(scene, r, entityChar) {
+  let dir = {x:0, y:0};
+  if(entityChar.indexOf("(U)") !== -1) {
+    dir.y = 1;
+  }
+  if(entityChar.indexOf("(D)") !== -1) {
+    dir.y = -1;
+  }
+  if(entityChar.indexOf("(R)") !== -1) {
+    dir.x = 1;
+  }
+  if(entityChar.indexOf("(L)") !== -1) {
+    dir.x = -1;
+  }
+  let enemy = new Enemy(r, cc.Sprite.create(res.img.memo), dir);
+  scene._objects.push(enemy);
+  addChild(scene, enemy);
 }
 
 function createItem(scene, r) {

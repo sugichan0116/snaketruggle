@@ -5,10 +5,23 @@ class Entity {
     this.image = _image;
   }
 
+  releaseImage() {
+    if(this.isRemoved === true) {
+      if(this.image) this.image.removeFromParent();
+      if(this.images) this.images.forEach((img) => {
+        img.removeFromParent();
+      });
+    }
+  }
+
   update(scene, option) {
+    if(this.isRemoved === true) {
+      this.releaseImage();
+      return false;
+    }
     if(!option) option = {};
     if(option.scale === undefined) option.scale = 32;
-    //console.log(this.image, this.r);
+
     if(this.image === undefined) return false;
     this.image.setPosition(option.scale * this.r.x, option.scale * this.r.y);
     if(this.images) {
@@ -20,6 +33,22 @@ class Entity {
       });
     }
     return true;
+  }
+
+  isRelate(obj) {
+    return false;
+  }
+
+  canMove(objects, target, isRelate) {
+    let res = true;
+    objects.forEach(function(obj) {
+      if(isRelate(obj)) {
+        if(target.x === obj.r.x && target.y === obj.r.y) {
+          res = false;
+        }
+      }
+    });
+    return res;
   }
 
   shift(dr) {
@@ -38,13 +67,16 @@ class Entity {
 }
 
 class Wall extends Entity {
-  update(scene, option) {
-    super.update(scene, option);
 
+  removeImage() {
+    if(this.image) this.image.removeFromParent();
+    if(this.images) this.images.forEach((img) => {
+      img.removeFromParent();
+    });
   }
 
   reload(scene) {
-    this.image.removeFromParent();
+    this.removeImage();
     let around = {"-1":{}, "0":{}, "1":{}};
     scene._objects.forEach((obj) => {
       if(obj instanceof Wall) {
@@ -54,11 +86,11 @@ class Wall extends Entity {
         }
       }
     });
-    this.images = createImageForWall(around);
+    // this.around = around;
+    this.images = createImageForWall(around, scene._frames);
     this.images.forEach((img) => {
       scene.addChild(img, this.zIndex());
     });
-    //console.log(around);
   }
 }
 
@@ -69,12 +101,13 @@ class Item extends Entity {
   }
 
   update(scene, option) {
-    if(this.removed) return false;
+    if(this.isRemoved) return false;
     super.update(scene, option);
     scene._objects.forEach((obj) => {
       if(obj instanceof Head) {
         if(obj.r.x === this.r.x && obj.r.y === this.r.y) {
-          createSnake(scene);
+          // removeSnake(scene);
+          createSnake(scene, {}, true);
           cc.audioEngine.playEffect(res.se.item, false);
           this.isRemoved = true;
           return;
@@ -86,6 +119,52 @@ class Item extends Entity {
 
   zIndex() {
     return 3;
+  }
+}
+
+class Enemy extends Entity {
+  constructor(_r, _image, _dir) {
+    super(_r, _image);
+    this.dir = _dir;
+  }
+  isRelate(obj) {
+    return (obj instanceof Wall) || (obj instanceof Snake);
+  }
+  switchDirection() {
+    this.dir = {x:-this.dir.x, y:-this.dir.y};
+  }
+
+  move(scene) {
+    if(this.isMyTurn) {
+      if(this.canMove(
+        scene._objects,
+        {x:this.dir.x + this.r.x, y:this.dir.y + this.r.y},
+        this.isRelate
+      )) {
+        this.shift(this.dir);
+      } else {
+        this.switchDirection();
+      }
+      this.rot = getAngle(this.dir);
+      this.isMyTurn = false;
+    }
+  }
+
+  update(scene, option) {
+    if(!option) option = {};
+
+    this.move(scene);
+
+    this.image.removeFromParent();
+    this.image = createImageForEnemy(scene._frames);
+    this.image.attr({rotation : this.rot});
+    scene.addChild(this.image, this.zIndex());
+
+    return super.update(option.scale);
+  }
+
+  zIndex() {
+    return 4;
   }
 }
 
@@ -117,19 +196,18 @@ class Head extends Snake {
     }
     this.touch.r = {x: touch_r.x, y: touch_r.y};
   }
-  canMove(objects, target) {
-    let res = true;
-    objects.forEach(function(obj) {
-      if(obj instanceof Wall || obj instanceof Body) {
-        if(target.x === obj.r.x && target.y === obj.r.y) {
-          res = false;
-        }
+  isRelate(obj) {
+    return (obj instanceof Wall) || (obj instanceof Body) || (obj instanceof Enemy);
+  }
+  restartTime(objects) {
+    objects.forEach((obj) => {
+      if(obj instanceof Enemy) {
+        obj.isMyTurn = true;
       }
     });
-    return res;
   }
-  move(scale, scene) {
-    if(scale === undefined) scale = 32;
+  move(scene, scale) {
+    if(scale === undefined) scale = 16;
     let dr = {x: 0, y: 0};
     let pre = {r:{x:this.r.x, y:this.r.y}};
 
@@ -140,16 +218,17 @@ class Head extends Snake {
 
     //console.log(dr);
     if(dr.x || dr.y) {
-      //console.log(dr, this.touch.stack, this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y}));
-      if(this.canMove(scene._objects, {x:dr.x + pre.r.x, y:dr.y + pre.r.y})) {
+      if(this.canMove(
+        scene._objects,
+        {x:dr.x + pre.r.x, y:dr.y + pre.r.y},
+        this.isRelate
+      )) {
 
         super.shift(dr);
         super.notifyMove(scale, pre.r, dr);
 
-        if(dr.x === -1) this.rot = 0;
-        if(dr.y === 1) this.rot = 90;
-        if(dr.x === 1) this.rot = 180;
-        if(dr.y === -1) this.rot = 270;
+        this.rot = getAngle(dr);
+        this.restartTime(scene._objects);
       }
 
       this.releaseMoveDelta();
@@ -159,11 +238,10 @@ class Head extends Snake {
   update(scene, option) {
     if(!option) option = {};
     this.image.removeFromParent();
-    this.image = createImage("head", scene._frames);
+    this.image = createImageForSnake("head", scene._frames);
     this.image.attr({rotation : this.rot});
     scene.addChild(this.image, this.zIndex());
-    super.update(option.scale);
-    return true;
+    return super.update(option.scale);
   }
 
   zIndex() {
@@ -213,17 +291,15 @@ class Body extends Snake {
   update(scene, option) {
     if(!option) option = {};
     this.image.removeFromParent();
-    //console.log("frjifjrijfirjfijrifjrijfirjifjriji", this.image);
     //console.log(scene._frames);
-    this.image = createImage(this.key, scene._frames);
+    this.image = createImageForSnake(this.key, scene._frames);
     this.image.attr({
       rotation : this.rot,
       scaleY : (this.isFlip) ? -1 : 1
      });
     scene.addChild(this.image, this.zIndex());
-    super.update(option.scale);
     //console.log(this.image);
-    return true;
+    return super.update(option.scale);
   }
 
   zIndex() {
