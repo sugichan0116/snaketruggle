@@ -101,6 +101,10 @@ function createImageGate(index, frame) {
   return cc.Sprite.create(res.img.gate, cc.rect(0, 32 * index, 32, 32));
 }
 
+function createImagePortal(index, frame) {
+  return cc.Sprite.create(res.img.portal, cc.rect(32 * index, 32 * (frame % 4), 32, 32));
+}
+
 function getAngle(dr) {
   let rot = 0;
   if(dr.x === -1) rot = 0;
@@ -116,10 +120,31 @@ function addChild(scene, obj) {
 }
 
 function getProperty(text) {
-  return text.substring(
+  return (text) ? text.substring(
     text.indexOf('(') + 1,
     text.indexOf(')')
-  );
+  ) : undefined;
+}
+
+function createPortal(scene, r, entityChar) {
+  let option = getProperty(entityChar);
+  let obj;
+  if(!option) {
+    obj = new Portal(
+      r,
+      cc.Sprite.create(res.img.portal)
+    );
+  } else {
+    console.log(r, option.split('&'));
+    obj = new SignalPortal(
+      r,
+      cc.Sprite.create(res.img.portal),
+      option.split('&')
+    );
+  }
+
+  scene._objects.push(obj);
+  addChild(scene, obj);
 }
 
 function createGate(scene, r, entityChar, isSignal) {
@@ -147,7 +172,7 @@ function createSwitch(scene, r, entityChar) {
   addChild(scene, obj);
 }
 
-function createEnemy(scene, r, entityChar) {
+function createEnemy(scene, r, entityChar, angle) {
   let dir = {x:0, y:0};
   if(entityChar.indexOf("(U)") !== -1) {
     dir.y = 1;
@@ -161,7 +186,12 @@ function createEnemy(scene, r, entityChar) {
   if(entityChar.indexOf("(L)") !== -1) {
     dir.x = -1;
   }
-  let enemy = new Enemy(r, cc.Sprite.create(res.img.memo), dir);
+  let enemy = new Enemy(
+    r,
+    cc.Sprite.create(res.img.memo),
+    dir,
+    angle
+  );
   scene._objects.push(enemy);
   addChild(scene, enemy);
 }

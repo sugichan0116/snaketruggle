@@ -5,8 +5,8 @@ class Entity {
     this.image = _image;
   }
 
-  releaseImage() {
-    if(this.isRemoved === true) {
+  releaseImage(isForce) {
+    if(this.isRemoved === true || isForce === true) {
       if(this.image) this.image.removeFromParent();
       if(this.images) this.images.forEach((img) => {
         img.removeFromParent();
@@ -66,6 +66,69 @@ class Entity {
   }
 }
 
+class Portal extends Entity {
+  constructor(_r, _image) {
+    super(_r, _image);
+    this.state = 0;
+  }
+
+  isRelate(obj) {
+    return (obj instanceof Snake);
+  }
+
+  checkClear(scene) {
+    if(super.canMove(scene._objects, this.r, this.isRelate) === false) {
+      if(this.state !== 1) {
+        scene._gameState["isClear"] = true;
+        this.state = 1;
+        cc.audioEngine.playEffect(res.se.clear, false);
+      }
+    }
+  }
+
+  update(scene, option) {
+    this.checkClear(scene);
+
+    if(!option) option = {};
+    this.image.removeFromParent();
+    this.image = createImagePortal((this.isPowered === false) ? 1 : 0, scene._frames);
+    scene.addChild(this.image, this.zIndex());
+    return super.update(scene, option);
+  }
+
+  zIndex() {
+    return 2;
+  }
+}
+
+class SignalPortal extends Portal {
+  constructor(_r, _image, _receiver) {
+    super(_r, _image);
+    this.receivers = _receiver;
+    this.isPowered = false;
+  }
+
+  checkClear(scene) {
+    if(this.isPowered) super.checkClear(scene);
+  }
+
+  catchSignal(scene) {
+    let state = true;
+    this.receivers.forEach((receiver) => {
+      let signal = scene._signals[Number(receiver)];
+      if(signal === undefined) signal = false;
+      state = state && signal;
+    });
+    return state;
+  }
+
+  updateWithSignal(scene) {
+    if(this.catchSignal(scene) === true) {
+      this.isPowered = true;
+    }
+  }
+}
+
 class Gimmick extends Entity {
   isRelate(obj) {
     return (obj instanceof Snake) || (obj instanceof Enemy);
@@ -83,7 +146,6 @@ class Switch extends Gimmick {
     let isPowered = 0;
     if(super.canMove(scene._objects, this.r, super.isRelate) === false) {
       //snakeが乗ってる
-      console.log("!");
       if(this.preState === 0) {
         cc.audioEngine.playEffect(res.se.button, false);
       }
@@ -91,7 +153,7 @@ class Switch extends Gimmick {
       scene._signals[this.port] = true;
     }
     this.preState = isPowered;
-    
+
     if(!option) option = {};
     this.image.removeFromParent();
     this.image = createImageSwitch(isPowered, scene._frames);
@@ -117,7 +179,6 @@ class Gate extends Gimmick {
     this.receivers.forEach((receiver) => {
       let signal = scene._signals[Number(receiver)];
       if(signal === undefined) signal = false;
-      console.log(">>>>>>>>>>>>>>>DDR", signal, receiver);
       state = state && signal;
     });
     return state;
@@ -126,7 +187,6 @@ class Gate extends Gimmick {
   changeWall(scene) {
     let state = this.catchSignal(scene);
     this.isWall = state ^ this.isWallOnNoSignal;
-    console.log("RESUTL : ", state, this.isWall);
     if(super.canMove(scene._objects, this.r, super.isRelate) === false) {
       //snakeが乗ってる
       this.isWall = false;
@@ -203,9 +263,10 @@ class Item extends Entity {
 }
 
 class Enemy extends Entity {
-  constructor(_r, _image, _dir) {
+  constructor(_r, _image, _dir, _angle) {
     super(_r, _image);
     this.dir = _dir;
+    this.angleOnMove = _angle;
   }
   isRelate(obj) {
     return (obj instanceof Wall)
@@ -214,7 +275,16 @@ class Enemy extends Entity {
       || (obj instanceof Gate && obj.isWall);
   }
   switchDirection() {
-    this.dir = {x:-this.dir.x, y:-this.dir.y};
+    if(this.angleOnMove === undefined) this.angleOnMove = 180;
+    let angle = this.angleOnMove * Math.PI / 180;
+
+    console.log("this.dir");
+    console.log(this.dir);
+    this.dir = {
+      x : Math.round(Math.cos(angle) * this.dir.x - Math.sin(angle) * this.dir.y),
+      y : Math.round(Math.sin(angle) * this.dir.x + Math.cos(angle) * this.dir.y)
+    };
+    console.log(this.dir);
   }
 
   move(scene) {

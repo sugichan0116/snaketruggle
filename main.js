@@ -8,12 +8,14 @@ var res = {
     crawler : resPath + "crawler.png",
     button : resPath + "switch.png",
     gate : resPath + "gate.png",
+    portal : resPath + "portal.png",
     background : resPath + "back.png"
   },
   se : {
     item : resPath + "getPoint.mp3",
     move : resPath + "move.mp3",
-    button : resPath + "button.mp3"
+    button : resPath + "button.mp3",
+    clear : resPath + "clear.mp3"
   }
 }
 
@@ -27,9 +29,11 @@ window.onload = function() {
       res.img.crawler,
       res.img.background,
       res.img.button,
+      res.img.portal,
       res.img.gate,
       res.se.item,
       res.se.button,
+      res.se.clear,
       res.se.move
     ];
     cc.LoaderScene.preload(preload_res, function() {
