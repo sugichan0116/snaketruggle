@@ -18,6 +18,10 @@ function MainScene() {
       var bg = cc.Sprite.create(res.img.background);
       bg.setPosition(size.width/2, size.height/2);
       sc.addChild(bg);
+      bg = cc.Sprite.create(res.img.reset);
+      bg.setPosition(32, size.height/2);
+      sc.addChild(bg, 9);
+      //sc.addChild(cc.Sprite.create(res.img.reset).setPosition(32, size.height/2), 9);
 
       this._gameState["stage"] = 0;
       this.generate();

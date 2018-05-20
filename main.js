@@ -9,6 +9,7 @@ var res = {
     button : resPath + "switch.png",
     gate : resPath + "gate.png",
     portal : resPath + "portal.png",
+    reset : resPath + "reset.png",
     background : resPath + "back.png"
   },
   se : {
@@ -31,6 +32,7 @@ window.onload = function() {
       res.img.button,
       res.img.portal,
       res.img.gate,
+      res.img.reset,
       res.se.item,
       res.se.button,
       res.se.clear,

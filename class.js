@@ -380,7 +380,9 @@ class Head extends Snake {
         this.isRelate
       )) {
 
+        cc.audioEngine.setEffectsVolume(0.5);
         cc.audioEngine.playEffect(res.se.move, false);
+        //cc.audioEngine.setEffectsVolume(1.0);
         super.shift(dr);
         super.notifyMove(scale, pre.r, dr);
 
