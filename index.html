@@ -5,8 +5,21 @@
     <title>Puzzle</title>
   </head>
   <body>
+    <style>
+      #wrap {
+        height: 100%;
+        width: 100%;
+      }
+
+      #gameCanvas {
+        display: block;
+      }
+    </style>
+    <div id="wrap">
+      <canvas id="gameCanvas" width="640" height="360"></canvas>
+    </div>
     <script type="text/javascript" src="cocos2d-js-v3.13.js" charset="utf-8"></script>
-    <canvas id="gameCanvas" width="640" height="360"></canvas>
+
     <script type="text/javascript" src="main.js"></script>
   </body>
 </html>

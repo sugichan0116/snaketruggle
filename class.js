@@ -363,7 +363,7 @@ class Head extends Snake {
     });
   }
   move(scene, scale) {
-    if(scale === undefined) scale = 16;
+    if(scale === undefined) scale = 28;
     let dr = {x: 0, y: 0};
     let pre = {r:{x:this.r.x, y:this.r.y}};
 

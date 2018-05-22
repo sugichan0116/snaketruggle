@@ -24,7 +24,7 @@ var MainScene = (function () {
       //sc.addChild(cc.Sprite.create(res.img.reset).setPosition(32, size.height/2), 9);
 
       this.reset();
-      this._gameState["stage"] = 6;
+      this._gameState["stage"] = 0;
       this.generate();
 
       //タッチ処理
@@ -123,12 +123,12 @@ var MainScene = (function () {
           r: {x:7, y:3},
           lengthOfSnake: 3,
           data: {
-            "0" : "w, w, w,  ,,L(R)",
-            "1" : "w, w, w,  , w,  ",
-            "2" : "w, w, w,  , w,  ",
-            "3" : ",s(0),w,  , w,  ",
-            "4" : " ,  ,  , @,g(0),",
-            "5" : "w, w,w,p(0),w, w"
+            "0" : "w,s(0),  ,  ,  ,  ",
+            "1" : "w,  , w,G(0),w,  ",
+            "2" : "w,  , w,s(1), w,  ",
+            "3" : "w,  ,w,  , w,  ",
+            "4" : "w,  ,  , @,  ,  ",
+            "5" : "w, w,w,p(1),w, w"
           }
         };
       }
