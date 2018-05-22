@@ -71,7 +71,8 @@ var MainScene = (function () {
       }, 0.1);
     },
     mapdata : function (index) {
-      // index = 6;
+      // index = 0;
+
       //gate
       if(index === 0) {
         return {
@@ -185,8 +186,24 @@ var MainScene = (function () {
           }
         };
       }
-      //difficult
+      // remote switch gate
       if(index === 7) {
+        return {
+          size: {width:6, height:5},
+          r: {x:9, y:5},
+          lengthOfSnake: 2,
+          data: {
+            "0" : "   @,    ,   w,    ,p(2&4)",
+            "1" : "    ,    ,G(3),    ,    ",
+            "2" : "s(1),    ,   w,    ,s(2)",
+            "3" : "   w,   w,   w,   w,   w",
+            "4" : "    ,    ,G(2),    ,L(R)",
+            "5" : "s(3),    ,G(1),    ,s(4)"
+          }
+        };
+      }
+      //rock difficult
+      if(index === 8) {
         return {
           size: {width:8, height:4},
           r: {x:9, y:5},
@@ -200,22 +217,6 @@ var MainScene = (function () {
             "5" : "w,  , w, w",
             "6" : " ,  , w, p",
             "7" : " , i,G(0),g(0)",
-          }
-        };
-      }
-      //difficult
-      if(index === 8) {
-        return {
-          size: {width:6, height:6},
-          r: {x:9, y:4},
-          lengthOfSnake: 18,
-          data: {
-            "0" : "s(3),    ,    ,    ,    ,s(1)",
-            "1" : "    ,   @,    ,    ,    ,    ",
-            "2" : "e(L),    ,e(L),    ,e(L),    ",
-            "3" : "    ,e(R),    ,e(R),    ,e(R)",
-            "4" : "    ,    ,    ,    ,p(1&2&3&4),    ",
-            "5" : "s(2),    ,    ,    ,    ,s(4)"
           }
         };
       }
@@ -233,6 +234,22 @@ var MainScene = (function () {
             "4" : "s(1),G(1),s(3),    ,s(2)",
             "5" : "g(2),   w,g(1),   w,g(2)",
             "6" : "s(3),    ,p(2&3&4),g(4),s(1)",
+          }
+        };
+      }
+      //enemy difficult
+      if(index === 10) {
+        return {
+          size: {width:6, height:6},
+          r: {x:9, y:4},
+          lengthOfSnake: 18,
+          data: {
+            "0" : "s(3),    ,    ,    ,    ,s(1)",
+            "1" : "    ,   @,    ,    ,    ,    ",
+            "2" : "e(L),    ,e(L),    ,e(L),    ",
+            "3" : "    ,e(R),    ,e(R),    ,e(R)",
+            "4" : "    ,    ,    ,    ,p(1&2&3&4),    ",
+            "5" : "s(2),    ,    ,    ,    ,s(4)"
           }
         };
       }
