@@ -1,7 +1,12 @@
 {
     "debugMode"     : 1,
+    "showFPS"       : false,
     "frameRate"     : 60,
     "id"            : "gameCanvas",
     "renderMode"    : 1,
-    "jsList"        : []
+    "jsList"        : [
+      "./scene.js",
+      "./func.js",
+      "./class.js"
+    ]
 }

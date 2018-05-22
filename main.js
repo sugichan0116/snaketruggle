@@ -10,6 +10,7 @@ var res = {
     gate : resPath + "gate.png",
     portal : resPath + "portal.png",
     reset : resPath + "reset.png",
+    title : resPath + "title.png",
     background : resPath + "back.png"
   },
   se : {
@@ -33,14 +34,16 @@ window.onload = function() {
       res.img.portal,
       res.img.gate,
       res.img.reset,
+      res.img.title,
       res.se.item,
       res.se.button,
       res.se.clear,
       res.se.move
     ];
     cc.LoaderScene.preload(preload_res, function() {
-      var MyScene = MainScene();
-      cc.director.runScene(new MyScene());
+      //var MyScene = new TitleScene();
+      console.log(TitleScene);
+      cc.director.runScene(new TitleScene());
     }, this);
   };
   cc.game.run("gameCanvas");

@@ -1,5 +1,5 @@
 
-function MainScene() {
+var MainScene = (function () {
   return cc.Scene.extend({
     //プロパティ
     _scale   : 32,
@@ -148,11 +148,17 @@ function MainScene() {
           }
         };
       }
+
     },
     generate : function () {
       let sc = this;
       //mapの生成
       let map = this.mapdata(this._gameState["stage"]);
+      if(map === undefined) {
+        sc.nextTo();
+        return;
+      }
+
       for(let x = 0; x <= 20; x++) {
         for(let y = 0; y <= 12; y++) {
           if(map.size.width > x - map.r.x &&
@@ -202,6 +208,12 @@ function MainScene() {
       });
 
     },
+    nextTo : function () {
+      let transition = cc.TransitionFade.create(1.0, new TitleScene());
+      cc.director.runScene(transition);
+      cc.eventManager.removeAllListeners();
+      this.removeAllChildren();
+    },
     reset : function () {
       this._isReset = false;
       this._frames = 0;
@@ -243,4 +255,43 @@ function MainScene() {
       if(sc._gameState["isClear"]) sc.nextStage();
     }
   });
-}
+})();
+
+var TitleScene = (function () {
+  return cc.Scene.extend({
+    //pro
+
+    //init
+    onEnter : function () {
+      this._super();
+      let scene = this;
+
+      var size = cc.director.getWinSize();
+      var bg = cc.Sprite.create(res.img.title);
+      bg.setPosition(size.width/2, size.height/2);
+      this.addChild(bg);
+
+      this.scheduleUpdate();
+      //タッチ処理
+      cc.eventManager.addListener(cc.EventListener.create({
+        event: cc.EventListener.TOUCH_ONE_BY_ONE,
+        onTouchBegan: function (touch, event) {
+            cc.log("onTouchBegan");
+            scene.nextTo();
+            return true;
+        }
+      }), this);
+
+    },
+    nextTo : function () {
+      console.log(MainScene);
+      let transition = cc.TransitionFade.create(1.0, new MainScene());
+      cc.director.runScene(transition);
+      cc.eventManager.removeAllListeners();
+      this.removeAllChildren();
+    },
+    update : function () {
+
+    }
+  });
+})();
