@@ -71,7 +71,8 @@ var MainScene = (function () {
       }, 0.1);
     },
     mapdata : function (index) {
-
+      // index = 6;
+      //gate
       if(index === 0) {
         return {
           size: {width:6, height:6},
@@ -87,6 +88,7 @@ var MainScene = (function () {
           }
         };
       }
+      //enemy
       if(index === 1) {
         return {
           size: {width:6, height:6},
@@ -102,22 +104,8 @@ var MainScene = (function () {
           }
         };
       }
+      //switch
       if(index === 2) {
-        return {
-          size: {width:6, height:7},
-          r: {x:9, y:5},
-          lengthOfSnake: 2,
-          data: {
-            "0" : " ,  ,  , @, w, w, w",
-            "1" : " , w, w,  , w, w, w",
-            "2" : " ,  ,  ,  ,  , s(0),  ",
-            "3" : "w, w, w,  , w,  ,  ",
-            "4" : "w, w, w, p(0), w, w, w",
-            "5" : "w,R(L),,  , w, w, w"
-          }
-        };
-      }
-      if(index === 3) {
         return {
           size: {width:6, height:6},
           r: {x:9, y:5},
@@ -132,7 +120,41 @@ var MainScene = (function () {
           }
         };
       }
+      //item & switch
+      if(index === 3) {
+        return {
+          size: {width:6, height:4},
+          r: {x:9, y:8},
+          lengthOfSnake: 3,
+          data: {
+            "0" : "s(2),G(2),   i,   @",
+            "1" : "    ,   w,   w,    ",
+            "2" : "    ,   w,   w,    ",
+            "3" : "    ,    ,    ,s(1)",
+            "4" : "G(1),   w,   w,   w",
+            "5" : "   p,   w,   w,   w"
+          }
+        };
+      }
+      //life of gate & item
       if(index === 4) {
+        return {
+          size: {width:7, height:2},
+          r: {x:9, y:8},
+          lengthOfSnake: 3,
+          data: {
+            "0" : "   @,   w",
+            "1" : "s(1),   w",
+            "2" : "    ,   w",
+            "3" : "G(1),   i",
+            "4" : "    ,   w",
+            "5" : "    ,   w",
+            "6" : "   p,   w",
+          }
+        };
+      }
+      //enemy RARE
+      if(index === 5) {
         return {
           size: {width:6, height:3},
           r: {x:9, y:5},
@@ -147,7 +169,8 @@ var MainScene = (function () {
           }
         };
       }
-      if(index === 5) {
+      //switch & gate
+      if(index === 6) {
         return {
           size: {width:6, height:6},
           r: {x:9, y:5},
@@ -158,11 +181,12 @@ var MainScene = (function () {
             "2" : "w,g(0),w, ,  ,  ",
             "3" : " ,  ,  , w,  , w",
             "4" : " , w,  , w,  , w",
-            "5" : " ,  ,s(0),w,p(0), w,"
+            "5" : "s(0),, i,w,p(0), w,"
           }
         };
       }
-      if(index === 6) {
+      //difficult
+      if(index === 7) {
         return {
           size: {width:8, height:4},
           r: {x:9, y:5},
@@ -179,7 +203,39 @@ var MainScene = (function () {
           }
         };
       }
-
+      //difficult
+      if(index === 8) {
+        return {
+          size: {width:6, height:6},
+          r: {x:9, y:4},
+          lengthOfSnake: 18,
+          data: {
+            "0" : "s(3),    ,    ,    ,    ,s(1)",
+            "1" : "    ,   @,    ,    ,    ,    ",
+            "2" : "e(L),    ,e(L),    ,e(L),    ",
+            "3" : "    ,e(R),    ,e(R),    ,e(R)",
+            "4" : "    ,    ,    ,    ,p(1&2&3&4),    ",
+            "5" : "s(2),    ,    ,    ,    ,s(4)"
+          }
+        };
+      }
+      //switch difficult
+      if(index === 9) {
+        return {
+          size: {width:7, height:5},
+          r: {x:9, y:5},
+          lengthOfSnake: 8,
+          data: {
+            "0" : "s(2),    ,   @,    ,s(1)",
+            "1" : "g(3),   w,g(1),   w,g(2)",
+            "2" : "s(4),    ,s(3),    ,s(1)",
+            "3" : "g(1),   w,g(4),   w,g(3)",
+            "4" : "s(1),G(1),s(3),    ,s(2)",
+            "5" : "g(2),   w,g(1),   w,g(2)",
+            "6" : "s(3),    ,p(2&3&4),g(4),s(1)",
+          }
+        };
+      }
     },
     generate : function () {
       let sc = this;
@@ -202,7 +258,7 @@ var MainScene = (function () {
       Object.keys(map.data).forEach((x) => {
         let line = map.data[x].split(",");
         line.forEach((entityChar, y) => {
-          entityChar = entityChar.replace(" ", "");
+          entityChar = entityChar.replace(new RegExp(" ", "g"), "");
           let deploy = {r: {
             x:Number(x) + map.r.x,
             y:Number(y) + map.r.y
