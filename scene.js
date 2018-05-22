@@ -23,7 +23,8 @@ var MainScene = (function () {
       sc.addChild(bg, 9);
       //sc.addChild(cc.Sprite.create(res.img.reset).setPosition(32, size.height/2), 9);
 
-      this._gameState["stage"] = 0;
+      this.reset();
+      this._gameState["stage"] = 6;
       this.generate();
 
       //タッチ処理
@@ -133,18 +134,48 @@ var MainScene = (function () {
       }
       if(index === 4) {
         return {
-          size: {width:8, height:6},
+          size: {width:6, height:3},
           r: {x:7, y:3},
-          lengthOfSnake: 2,
+          lengthOfSnake: 4,
           data: {
-            "0" : "@,  , w, w, w, w",
-            "1" : "s(1),  ,  ,  ,e(D), ",
-            "2" : " , w, w,  , w, w",
-            "3" : "w, w, w,  ,  ,  ",
-            "4" : "s(1),,G(1),, w,  ",
-            "5" : " , i, w,  ,  ,  ",
-            "6" : "w, w, w,  , w,  ",
-            "7" : "p,  ,G(0),,  ,s(0)"
+            "0" : "w, p, w",
+            "1" : "w,e(L), w",
+            "2" : "w, @, w",
+            "3" : "  ,  ,  ",
+            "4" : "  ,  ,  ",
+            "5" : "  ,  ,  "
+          }
+        };
+      }
+      if(index === 5) {
+        return {
+          size: {width:6, height:6},
+          r: {x:7, y:3},
+          lengthOfSnake: 4,
+          data: {
+            "0" : "w,  ,  , @,  ,  ",
+            "1" : "w,  , w,  , w,  ",
+            "2" : "w,g(0),w, ,  ,  ",
+            "3" : " ,  ,  , w,  , w",
+            "4" : " , w,  , w,  , w",
+            "5" : " ,  ,s(0),w,p(0), w,"
+          }
+        };
+      }
+      if(index === 6) {
+        return {
+          size: {width:8, height:4},
+          r: {x:7, y:3},
+          lengthOfSnake: 3,
+          data: {
+            "0" : "w,  , i, w",
+            "1" : " ,  , i, w",
+            "2" : "i,  ,  , w",
+            "3" : "w, @, w, w",
+            "4" : "w,s(0),w,w",
+            "5" : "w,  , w, w",
+            "6" : " ,  , w, p",
+            "7" : " , i,G(0),g(0)",
           }
         };
       }
@@ -223,7 +254,6 @@ var MainScene = (function () {
       })
       this._objects = [];
 
-      this.generate();
     },
     nextStage : function () {
       this._gameState["stage"]++;
@@ -251,7 +281,10 @@ var MainScene = (function () {
       Object.keys(sc._signals).forEach((key) => {
         sc._signals[key] = false;
       });
-      if(sc._isReset === true) sc.reset();
+      if(sc._isReset === true) {
+        sc.reset();
+        this.generate();
+      }
       if(sc._gameState["isClear"]) sc.nextStage();
     }
   });
