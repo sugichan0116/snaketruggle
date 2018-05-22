@@ -75,7 +75,7 @@ var MainScene = (function () {
       if(index === 0) {
         return {
           size: {width:6, height:6},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 2,
           data: {
             "0" : "@, w, w, w, w, w",
@@ -90,7 +90,7 @@ var MainScene = (function () {
       if(index === 1) {
         return {
           size: {width:6, height:6},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 2,
           data: {
             "0" : "@, w, w, w, w, w",
@@ -105,7 +105,7 @@ var MainScene = (function () {
       if(index === 2) {
         return {
           size: {width:6, height:7},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 2,
           data: {
             "0" : " ,  ,  , @, w, w, w",
@@ -120,7 +120,7 @@ var MainScene = (function () {
       if(index === 3) {
         return {
           size: {width:6, height:6},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 3,
           data: {
             "0" : "w,s(0),  ,  ,  ,  ",
@@ -135,7 +135,7 @@ var MainScene = (function () {
       if(index === 4) {
         return {
           size: {width:6, height:3},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 4,
           data: {
             "0" : "w, p, w",
@@ -150,7 +150,7 @@ var MainScene = (function () {
       if(index === 5) {
         return {
           size: {width:6, height:6},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 4,
           data: {
             "0" : "w,  ,  , @,  ,  ",
@@ -165,7 +165,7 @@ var MainScene = (function () {
       if(index === 6) {
         return {
           size: {width:8, height:4},
-          r: {x:7, y:3},
+          r: {x:9, y:5},
           lengthOfSnake: 3,
           data: {
             "0" : "w,  , i, w",
@@ -190,8 +190,8 @@ var MainScene = (function () {
         return;
       }
 
-      for(let x = 0; x <= 20; x++) {
-        for(let y = 0; y <= 12; y++) {
+      for(let x = 0; x <= 25; x++) {
+        for(let y = 0; y <= 14; y++) {
           if(map.size.width > x - map.r.x &&
              x - map.r.x >= 0 &&
              map.size.height > y - map.r.y &&
