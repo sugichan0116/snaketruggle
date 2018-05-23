@@ -9,7 +9,7 @@ var MainScene = (function () {
     _isReset : false,
     _gameState : {},
     //init
-    onEnter:function () {
+    onEnter:function (stageIndex) {
       this._super();
       var sc = this;
 
@@ -20,11 +20,21 @@ var MainScene = (function () {
       sc.addChild(bg);
       bg = cc.Sprite.create(res.img.reset);
       bg.setPosition(32, size.height/2);
+      bg.setScaleY(size.height / bg.getContentSize().height);
       sc.addChild(bg, 9);
+      bg = cc.Sprite.create(res.img.side);
+      bg.setPosition(size.width - 32, size.height/2);
+      bg.setScaleY(size.height / bg.getContentSize().height);
+      sc.addChild(bg, 9);
+      bg = cc.Sprite.create(res.img.frame);
+      bg.setPosition(size.width/2, size.height/2);
+      bg.setScaleX(size.width / bg.getContentSize().width);
+      bg.setScaleY(size.height / bg.getContentSize().height);
+      sc.addChild(bg, 10);
       //sc.addChild(cc.Sprite.create(res.img.reset).setPosition(32, size.height/2), 9);
 
       this.reset();
-      this._gameState["stage"] = 0;
+      this._gameState["stage"] = stageIndex || 0;
       this.generate();
 
       //タッチ処理
@@ -37,6 +47,7 @@ var MainScene = (function () {
                 obj.releaseMoveDelta();
               }
             });
+            //resetbutton
             let r = touch.getLocation();
             if(r.x < 64) {
               sc._isReset = true;
@@ -125,7 +136,7 @@ var MainScene = (function () {
       if(index === 3) {
         return {
           size: {width:6, height:4},
-          r: {x:9, y:8},
+          r: {x:9, y:5},
           lengthOfSnake: 3,
           data: {
             "0" : "s(2),G(2),   i,   @",

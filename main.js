@@ -10,6 +10,8 @@ var res = {
     gate : resPath + "gate.png",
     portal : resPath + "portal.png",
     reset : resPath + "reset.png",
+    side : resPath + "reset_r.png",
+    frame : resPath + "frame.png",
     title : resPath + "title.png",
     background : resPath + "back.png"
   },
@@ -34,6 +36,8 @@ window.onload = function() {
       res.img.portal,
       res.img.gate,
       res.img.reset,
+      res.img.side,
+      res.img.frame,
       res.img.title,
       res.se.item,
       res.se.button,
