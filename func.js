@@ -172,6 +172,15 @@ function createSwitch(scene, r, entityChar) {
   addChild(scene, obj);
 }
 
+function createImitateEnemy(scene, r) {
+  let enemy = new ImitateEnemy(
+    r,
+    cc.Sprite.create(res.img.memo)
+  );
+  scene._objects.push(enemy);
+  addChild(scene, enemy);
+}
+
 function createEnemy(scene, r, entityChar, angle) {
   let dir = {x:0, y:0};
   if(entityChar.indexOf("(U)") !== -1) {

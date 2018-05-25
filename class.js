@@ -278,13 +278,10 @@ class Enemy extends Entity {
     if(this.angleOnMove === undefined) this.angleOnMove = 180;
     let angle = this.angleOnMove * Math.PI / 180;
 
-    console.log("this.dir");
-    console.log(this.dir);
     this.dir = {
       x : Math.round(Math.cos(angle) * this.dir.x - Math.sin(angle) * this.dir.y),
       y : Math.round(Math.sin(angle) * this.dir.x + Math.cos(angle) * this.dir.y)
     };
-    console.log(this.dir);
   }
 
   move(scene) {
@@ -318,6 +315,32 @@ class Enemy extends Entity {
 
   zIndex() {
     return 4;
+  }
+}
+
+class ImitateEnemy extends Enemy {
+  updateDirection(scene) {
+    scene._objects.forEach((obj) => {
+      if(obj instanceof Head) {
+        this.dir = obj.dir || {x:0, y:0};
+      }
+    });
+  }
+
+  move(scene) {
+    if(this.isMyTurn) {
+      this.updateDirection(scene);
+      if(this.canMove(
+        scene._objects,
+        {x:this.dir.x + this.r.x, y:this.dir.y + this.r.y},
+        this.isRelate
+      )) {
+        this.shift(this.dir);
+      }
+
+      this.rot = getAngle(this.dir);
+      this.isMyTurn = false;
+    }
   }
 }
 
@@ -392,6 +415,8 @@ class Head extends Snake {
 
       this.releaseMoveDelta();
     }
+
+    this.dir = dr;
   }
 
   update(scene, option) {

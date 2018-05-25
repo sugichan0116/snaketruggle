@@ -82,7 +82,7 @@ var MainScene = (function () {
       }, 0.1);
     },
     mapdata : function (index) {
-      // index = 0;
+      index = 10;
 
       //gate
       if(index === 0) {
@@ -248,8 +248,27 @@ var MainScene = (function () {
           }
         };
       }
-      //enemy difficult
+      //synclo
       if(index === 10) {
+        return {
+          size: {width:9, height:4},
+          r: {x:9, y:4},
+          lengthOfSnake: 2,
+          data: {
+            "0" : "   @,    ,p(3),    ",
+            "1" : "    ,    ,    ,s(2)",
+            "2" : "   a,    ,g(1),    ",
+            "3" : "   a,    ,    ,    ",
+            "4" : "   w,   w,   w,   w",
+            "5" : "   a,   w,s(2),g(2)",
+            "6" : "    ,s(1),   w,    ",
+            "7" : "    ,    ,    ,    ",
+            "8" : "   w,    ,    ,    "
+          }
+        };
+      }
+      //enemy difficult
+      if(index === 11) {
         return {
           size: {width:6, height:6},
           r: {x:9, y:4},
@@ -299,6 +318,8 @@ var MainScene = (function () {
             createEnemy(sc, deploy.r, entityChar, 90);
           } else if(entityChar.indexOf("L") === 0) {
             createEnemy(sc, deploy.r, entityChar, -90);
+          } else if(entityChar === "a") {
+            createImitateEnemy(sc, deploy.r);
           } else if(entityChar.indexOf("s") === 0) {
             createSwitch(sc, deploy.r, entityChar);
           } else if(entityChar.indexOf("g") === 0) {
