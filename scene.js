@@ -82,7 +82,7 @@ var MainScene = (function () {
       }, 0.1);
     },
     mapdata : function (index) {
-      index = 10;
+      //index = 10;
 
       //gate
       if(index === 0) {
@@ -145,6 +145,22 @@ var MainScene = (function () {
             "3" : "    ,    ,    ,s(1)",
             "4" : "G(1),   w,   w,   w",
             "5" : "   p,   w,   w,   w"
+          }
+        };
+      }
+      //life of gate & item
+      if(index === 4) {
+        return {
+          size: {width:6, height:1},
+          r: {x:9, y:8},
+          lengthOfSnake: 3,
+          data: {
+            "0" : "   @",
+            "1" : "    ",
+            "2" : "    ",
+            "3" : "p(1)",
+            "4" : "    ",
+            "5" : "s(1)"
           }
         };
       }
@@ -260,7 +276,7 @@ var MainScene = (function () {
             "2" : "   a,    ,g(1),    ",
             "3" : "   a,    ,    ,    ",
             "4" : "   w,   w,   w,   w",
-            "5" : "   a,   w,s(2),g(2)",
+            "5" : "   a,   w,s(3),g(2)",
             "6" : "    ,s(1),   w,    ",
             "7" : "    ,    ,    ,    ",
             "8" : "   w,    ,    ,    "
